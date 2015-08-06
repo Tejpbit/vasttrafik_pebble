@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>Västtrafik</title>
+</head>
+<body>
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="src/functions.js"></script>
+<script type="text/javascript">
+
+	var nearbyStops = getNearbyStops();
+
+  for (var i = 0; i < nearbyStops.length; i++) {
+    document.write(nearbyStops[i].name + "</br>");
+  };
+
+  var markland = nearbyStops[3];
+
+  console.log("asd:" + markland);
+  var triplist = getDepatureboardFrom(markland);
+
+  for (var i = 0; i < triplist.length; i++) {
+    document.write(
+      "</br>" + 
+      triplist[i].name + "</br>" + 
+      triplist[i].direction + "</br>" + 
+      triplist[i].track + "</br>" +
+      triplist[i].time +
+      "</br>"
+      
+
+    );
+  };
+ 	
+
+</script>
+
+
+</body>
+</html>
