@@ -34,8 +34,7 @@ function getNearbyStops() {
 
 	
 	var locations = obj.LocationList.StopLocation;
-	var filteredLocations = new Array();
-	var simpleLocations = [];
+	var filteredLocations = [];
 
 	while (locations.length > 0) {
 		var element = locations.shift();
@@ -56,7 +55,6 @@ function getDepatureboardFrom(obj) {
 							'&format=json&jsonpCallback=processJSON' +
 							'&id=' + obj.id;
 
-	var obj = getJsonFromGetRequest(depatureBoardURL);
-	console.log(obj.DepartureBoard);
-	return obj.DepartureBoard.Departure;
+	var jsonObj = getJsonFromGetRequest(depatureBoardURL);
+	return jsonObj.DepartureBoard.Departure;
 }
