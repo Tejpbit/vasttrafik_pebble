@@ -10,7 +10,7 @@
 <script type="text/javascript" src="src/functions.js"></script>
 <script type="text/javascript">
 
-	var nearbyStops = getNearbyStops();
+	var nearbyStops = getNearbyStops(getGPSCoords());
 
   for (var i = 0; i < nearbyStops.length; i++) {
     document.write(nearbyStops[i].name + "</br>");
@@ -19,7 +19,8 @@
   var markland = nearbyStops[3];
 
   console.log("asd:" + markland);
-  var triplist = getDepatureboardFrom(markland);
+  var triplist = getDepatureboardFrom(markland).Departure;
+
 
   for (var i = 0; i < triplist.length; i++) {
     document.write(

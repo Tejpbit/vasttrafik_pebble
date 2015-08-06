@@ -18,8 +18,7 @@ function getJsonFromGetRequest(url) {
 	return JSON.parse(cleanJson);
 }
 
-function getNearbyStops() {
-	var coords = getGPSCoords();
+function getNearbyStops(coords) {
 	var lat = coords[0], lon = coords[1];
 
 	var coordURL = API_URL +
@@ -49,12 +48,12 @@ function getNearbyStops() {
 }
 
 function getDepatureboardFrom(obj) {
-	var depatureBoardURL = 	API_URL +
+	var departureBoardURL = 	API_URL +
 							'departureBoard?authKey=' +
 							API_KEY +
 							'&format=json&jsonpCallback=processJSON' +
 							'&id=' + obj.id;
 
-	var jsonObj = getJsonFromGetRequest(depatureBoardURL);
-	return jsonObj.DepartureBoard.Departure;
+	var jsonObj = getJsonFromGetRequest(departureBoardURL);
+	return jsonObj.DepartureBoard;
 }
