@@ -1,5 +1,18 @@
 var UI = require('ui');
-var ajax = require('ajax');
+var f = require('functions');
+
+var menu = new UI.Menu({
+    backgroundColor: 'black',
+    textColor: 'white',
+    highlightBackgroundColor: 'white',
+    highlightTextColor: 'black',
+    sections: [{
+        title: 'Favourites',
+        items: [{
+            title: 'the fuq'
+        }]   
+    }]
+});
 
 var where = new UI.Card({  
   fullscreen: true,
@@ -7,12 +20,11 @@ var where = new UI.Card({
 
 });
 
-var url = 'http://api.vasttrafik.se/bin/rest.exe/v1/location.nearbystops?authKey=d1d59e3d-f294-4eff-bf57-f3e8a2fbcc51&format=json&jsonpCallback=processJSON';
 
 var lat;
 var lon;
 
-where.show();
+menu.show();
 
 var locationOptions = {
   enableHighAccuracy: true, 
@@ -21,45 +33,24 @@ var locationOptions = {
 };
 
 function locationSuccess(pos) {
-  console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
-  where.subtitle(pos.coords.latitude + ", " + pos.coords.longitude);
-    
   lat = pos.coords.latitude;
   lon = pos.coords.longitude;
     
-  var coordURL = url + "&originCoordLat=" + lat + "&originCoordLong=" + lon + "&maxNo=5";
+  console.log('lat= ' + lat + ' lon= ' + lon);
+  where.subtitle(lat + ", " + lon);
     
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open( "GET", coordURL, false );
-  xmlHttp.send( null );
-  var vastTrafikJson = xmlHttp.responseText;
-  var cleanJson = vastTrafikJson.substring(13, vastTrafikJson.length - 2);
-  var obj = JSON.parse(cleanJson);
-    
-    
-  console.log("tjenna: " + obj.LocationList);
+  var nearbyStops = f.getNearbyStops([lat, lon]);
+  console.log(f.tjenna);
   
-  /*  
-  ajax(
-      {
-          url: coordURL,
-          type: 'json'
-      },
-      function(data) {
-          console.log("success");
-          console.log("coordURL: " + coordURL);
-      },
-      function(error) {
-          console.log("failure ajax");
-          console.log("coordURL: " + coordURL);
-          console.log("error: " + error);
-      }
-  );
-  */
 }
 
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
+    var coordErrorCard = new UI.Card({
+        title:"Error",
+        subtitle:err
+    });
+    coordErrorCard.show();
 }
 navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 

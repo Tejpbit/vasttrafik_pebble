@@ -1,13 +1,9 @@
-
+var functions = {};
 var API_URL = "http://api.vasttrafik.se/bin/rest.exe/v1/";
 
 var API_KEY = "d1d59e3d-f294-4eff-bf57-f3e8a2fbcc51";
 
-function getGPSCoords() {
-	return [57.6699708, 11.9358389];
-}
-
-function getJsonFromGetRequest(url) {
+var getJsonFromGetRequest = function(url) {
 	console.log(url);
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET", url, false);
@@ -16,9 +12,15 @@ function getJsonFromGetRequest(url) {
 	var vastTrafikJson = xmlHttp.responseText;
 	var cleanJson = vastTrafikJson.substring(13, vastTrafikJson.length - 2);
 	return JSON.parse(cleanJson);
-}
+};
 
-function getNearbyStops(coords) {
+functions.getGPSCoords = function() {
+	return [57.6699708, 11.9358389];
+};
+
+functions.tjenna = "fan va fint";
+
+functions.getNearbyStops = function(coords) {
 	var lat = coords[0], lon = coords[1];
 
 	var coordURL = API_URL +
@@ -45,10 +47,10 @@ function getNearbyStops(coords) {
 	}
 
 	return filteredLocations;
-}
+};
 
-function getDepatureboardFrom(obj) {
-	var departureBoardURL = 	API_URL +
+functions.getDepatureboardFrom = function(obj) {
+    var departureBoardURL = API_URL +
 							'departureBoard?authKey=' +
 							API_KEY +
 							'&format=json&jsonpCallback=processJSON' +
@@ -56,4 +58,6 @@ function getDepatureboardFrom(obj) {
 
 	var jsonObj = getJsonFromGetRequest(departureBoardURL);
 	return jsonObj.DepartureBoard;
-}
+};
+
+this.exports = functions;
