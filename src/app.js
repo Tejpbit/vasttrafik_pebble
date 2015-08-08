@@ -2,16 +2,19 @@ var UI = require('ui');
 var f = require('functions');
 
 var menu = new UI.Menu({
-    backgroundColor: 'black',
-    textColor: 'white',
-    highlightBackgroundColor: 'white',
-    highlightTextColor: 'black',
     sections: [{
-        title: 'Favourites',
-        items: [{
-            title: 'the fuq'
-        }]   
+    title: 'Bästtrafik',
+    items: [{
+      title: 'Favourites',
+      subtitle: 'Add by long press select',
     }]
+  },{
+    title: 'Nearby Stations'
+  }]
+});
+
+menu.on('click', 'back', function() {
+   menu.hide(); 
 });
 
 var where = new UI.Card({  
@@ -20,6 +23,7 @@ var where = new UI.Card({
 
 });
 
+var subMenu;
 
 var lat;
 var lon;
@@ -39,9 +43,36 @@ function locationSuccess(pos) {
   console.log('lat= ' + lat + ' lon= ' + lon);
   where.subtitle(lat + ", " + lon);
     
-  var nearbyStops = f.getNearbyStops([lat, lon]);
-  console.log(f.tjenna);
-  
+  f.getNearbyStops([lat, lon], function(nearbyStops) {
+     nearbyStops.map(function(stop) {
+        return {title: stop.name};
+    }).forEach(function(item, index) {
+        menu.item(1, index, item);
+    });
+    
+    menu.on('select', function(e) {
+        var selectedStop = nearbyStops[e.itemIndex];
+        subMenu = new UI.Menu({
+            title: selectedStop.name,
+        });
+        subMenu.on('click', 'back', function() {
+            subMenu.hide();
+        });
+        
+        f.getDepartureboardFrom(selectedStop, function(departures) {
+           departures.forEach(function(item, index) {
+               subMenu.item(0, index, {
+                   title: item.name,
+                   subtitle: (item.rtTime || item.time) + " " + item.direction
+               });
+           });
+        });
+        subMenu.show();
+      console.log('Selected item #' + e.itemIndex + ' of section #' + e.sectionIndex);
+      console.log('The item is titled "' + e.item.title + '"'); 
+  });
+    
+    });
 }
 
 function locationError(err) {

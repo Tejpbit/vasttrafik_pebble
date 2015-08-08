@@ -1,63 +1,72 @@
+ajax = require("ajax");
+
 var functions = {};
 var API_URL = "http://api.vasttrafik.se/bin/rest.exe/v1/";
 
 var API_KEY = "d1d59e3d-f294-4eff-bf57-f3e8a2fbcc51";
 
-var getJsonFromGetRequest = function(url) {
-	console.log(url);
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open("GET", url, false);
-	xmlHttp.send(null);
+function createQuery(params) {
+    params.authKey = API_KEY;
+    params.format = "json";
+    return ajax.formify(params);
+}
 
-	var vastTrafikJson = xmlHttp.responseText;
-	var cleanJson = vastTrafikJson.substring(13, vastTrafikJson.length - 2);
-	return JSON.parse(cleanJson);
-};
+function ajaxRequest(path, args, success, error) {
+    var query = createQuery(args);
+    var url = API_URL + path + "?" + query; 
+    console.log(url);
+     ajax({
+        url: url,
+        type: 'json'
+     },success, error);
+}
 
-functions.getGPSCoords = function() {
-	return [57.6699708, 11.9358389];
-};
-
-functions.tjenna = "fan va fint";
-
-functions.getNearbyStops = function(coords) {
+functions.getNearbyStops = function(coords, callback) {
 	var lat = coords[0], lon = coords[1];
 
-	var coordURL = API_URL +
-					"location.nearbystops?authKey=" +
-					API_KEY +
-					"&format=json&jsonpCallback=processJSON" +
-					"&originCoordLat=" + lat +
-					"&originCoordLong=" + lon +
-					"&maxNo=30";
+    var query = {
+        originCoordLat: lat,
+        originCoordLong: lon,
+        maxNo: 20
+    };
+    
+    ajaxRequest("location.nearbystops", query, 
+        function(data) {
+            var locations = data.LocationList.StopLocation;
+	        var filteredLocations = [];
 
-	var obj = getJsonFromGetRequest(coordURL);
-
-	
-	var locations = obj.LocationList.StopLocation;
-	var filteredLocations = [];
-
-	while (locations.length > 0) {
-		var element = locations.shift();
-		filteredLocations.push(element);
-		locations = locations
-		.filter(function (el) {
-			return el.name !== element.name;
-		});
-	}
-
-	return filteredLocations;
+        	while (locations.length > 0) {
+        		var element = locations.shift();
+        		filteredLocations.push(element);
+        		locations = locations
+        		.filter(function (el) {
+        			return el.name !== element.name;
+        		});
+        	}
+            
+            callback(filteredLocations);
+        },
+         function(error) {
+             console.log("Error when fetching data: " + error);
+         }
+    );
 };
 
-functions.getDepatureboardFrom = function(obj) {
-    var departureBoardURL = API_URL +
-							'departureBoard?authKey=' +
-							API_KEY +
-							'&format=json&jsonpCallback=processJSON' +
-							'&id=' + obj.id;
-
-	var jsonObj = getJsonFromGetRequest(departureBoardURL);
-	return jsonObj.DepartureBoard;
+functions.getDepartureboardFrom = function(obj, callback) {
+    var query = {
+        id: obj.id,
+        maxDeparturesPerLine: 3,
+        timeSpan: 60
+    };
+    
+    ajaxRequest("departureBoard", query, 
+        function(data){
+            console.log(JSON.stringify(data));
+            callback(data.DepartureBoard.Departure);
+        }, function (error) {
+            console.log("Error, failed to fetch departureBoard: " + error);
+        }    
+    );
 };
 
 this.exports = functions;
