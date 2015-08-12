@@ -1,6 +1,6 @@
 ajax = require("ajax");
 
-var functions = {};
+var api_communicator = {};
 var API_URL = "http://api.vasttrafik.se/bin/rest.exe/v1/";
 
 var API_KEY = "";
@@ -21,7 +21,7 @@ function ajaxRequest(path, args, success, error) {
      },success, error);
 }
 
-functions.getNearbyStops = function(coords, callback) {
+api_communicator.getNearbyStops = function(coords, callback) {
     var lat = coords[0], lon = coords[1];
 
     var query = {
@@ -52,7 +52,7 @@ functions.getNearbyStops = function(coords, callback) {
     );
 };
 
-functions.getDepartureboardFrom = function(obj, callback) {
+api_communicator.getDepartureboardFrom = function(obj, callback) {
     var query = {
         id: obj.id,
         maxDeparturesPerLine: 3,
@@ -69,4 +69,4 @@ functions.getDepartureboardFrom = function(obj, callback) {
     );
 };
 
-this.exports = functions;
+this.exports = api_communicator;
