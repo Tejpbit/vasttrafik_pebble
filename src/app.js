@@ -1,14 +1,16 @@
 var UI = require('ui');
 var f = require('functions');
 var utils = require('utils');
+var favourites = require('favourites');
 
-var FAVOURITES = "favourites";
-var favourites = localStorage.getItem(FAVOURITES) || [];
+var FAVOURITES_SECTION = 0;
+var NEARBY_SECTION = 1;
 
-console.log("LocalStorage, favourites");
-console.log(favourites);
+var subMenu;
+var nearbyStops;
 
-
+var lat;
+var lon;
 
 var menu = new UI.Menu({
     sections: [{
@@ -23,39 +25,25 @@ var menu = new UI.Menu({
 });
 
 
-
 menu.on('click', 'back', function() {
-   localStorage.setItem(FAV);
+   favourites.saveToStorage();
    menu.hide(); 
 });
 
-var subMenu;
-var nearbyStops;
-
-var lat;
-var lon;
-
-menu.show();
-
-var locationOptions = {
-  enableHighAccuracy: true, 
-  maximumAge: 10000, 
-  timeout: 10000
-};
 
 function locationSuccess(pos) {
   lat = pos.coords.latitude;
   lon = pos.coords.longitude;
     
-  f.getNearbyStops([lat, lon], nearbyStopsCallback);
+  f.getNearbyStops([lat, lon], setupMainMenuItems);
 }
 
-function nearbyStopsCallback(stops) {
+function setupMainMenuItems(stops) {
     printStopsToMenu(stops);
     nearbyStops = stops;
     
-    menu.on('select', mainMenuOnSelect);
-    menu.on('longSelect', mainMenuOnLongSelect);
+    menu.on('select', setupAndShowSubMenu);
+    menu.on('longSelect', toggleFavourite);
 }
 
 function printStopsToMenu(stops) {
@@ -66,7 +54,7 @@ function printStopsToMenu(stops) {
     });   
 }
 
-function mainMenuOnSelect(e) {
+function setupAndShowSubMenu(e) {
     var selectedStop = nearbyStops[e.itemIndex];
     subMenu = new UI.Menu({
         title: selectedStop.name,
@@ -88,8 +76,8 @@ function departureBoardCallback(departures) {
     });
 }
 
-function mainMenuOnLongSelect(e) {
-    console.log("In longselect!");
+function toggleFavourite(e) {
+    
     var stopID = nearbyStops[e.itemIndex].id;
     var stopIDIndex = favourites.indexOf(stopID);
     if (stopIDIndex !== -1) {
@@ -100,7 +88,6 @@ function mainMenuOnLongSelect(e) {
 }
 
 
-
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
     var coordErrorCard = new UI.Card({
@@ -109,6 +96,12 @@ function locationError(err) {
     });
     coordErrorCard.show();
 }
-navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
 
+var locationOptions = {
+  enableHighAccuracy: true, 
+  maximumAge: 10000, 
+  timeout: 10000
+};
+navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions);
+menu.show();
 
