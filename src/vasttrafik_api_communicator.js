@@ -22,7 +22,7 @@ function ajaxRequest(path, args, success, error) {
 }
 
 functions.getNearbyStops = function(coords, callback) {
-	var lat = coords[0], lon = coords[1];
+    var lat = coords[0], lon = coords[1];
 
     var query = {
         originCoordLat: lat,
@@ -33,16 +33,16 @@ functions.getNearbyStops = function(coords, callback) {
     ajaxRequest("location.nearbystops", query, 
         function(data) {
             var locations = data.LocationList.StopLocation;
-	        var filteredLocations = [];
+            var filteredLocations = [];
 
-        	while (locations.length > 0) {
-        		var element = locations.shift();
-        		filteredLocations.push(element);
-        		locations = locations
-        		.filter(function (el) {
-        			return el.name !== element.name;
-        		});
-        	}
+            while (locations.length > 0) {
+                var element = locations.shift();
+                filteredLocations.push(element);
+                locations = locations
+                .filter(function (el) {
+                    return el.name !== element.name;
+                });
+            }
             
             callback(filteredLocations);
         },
