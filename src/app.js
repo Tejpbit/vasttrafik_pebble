@@ -1,6 +1,5 @@
 var UI = require('ui');
-var f = require('functions');
-var utils = require('utils');
+var f = require('api_communicator');
 var favourites = require('favourites');
 
 var FAVOURITES_SECTION = 0;
@@ -39,11 +38,23 @@ function locationSuccess(pos) {
 }
 
 function setupMainMenuItems(stops) {
+    favourites.prioritizeIfPresent(stops);
     printStopsToMenu(stops);
     nearbyStops = stops;
     
-    menu.on('select', setupAndShowSubMenu);
+    menu.on('select', favouritesOrSubMenu);
     menu.on('longSelect', toggleFavourite);
+}
+
+function favouritesOrSubMenu(e){
+    console.log("Itemindex: " + e.itemIndex)
+    console.log("title:     " + e.title)
+    if (e.itemIndex === 0) {
+        console.log("show favourites");
+    } else {
+        console.log("show submenu");
+        setupAndShowSubMenu(e);
+    }
 }
 
 function printStopsToMenu(stops) {

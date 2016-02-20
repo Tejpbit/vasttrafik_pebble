@@ -3,7 +3,7 @@ ajax = require("ajax");
 var api_communicator = {};
 var API_URL = "http://api.vasttrafik.se/bin/rest.exe/v1/";
 
-var API_KEY = "";
+var API_KEY = "d1d59e3d-f294-4eff-bf57-f3e8a2fbcc51";
 
 function createQuery(params) {
     params.authKey = API_KEY;
