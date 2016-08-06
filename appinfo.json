@@ -1,7 +1,7 @@
 {
     "appKeys": {},
     "capabilities": [
-        ""
+        "location"
     ],
     "companyName": "andresamuelsson94@gmail.com",
     "longName": "B\u00e4sttrafik",
@@ -34,7 +34,6 @@
     "sdkVersion": "3",
     "shortName": "B\u00e4sttrafik",
     "targetPlatforms": [
-        "aplite",
         "basalt"
     ],
     "uuid": "309c8637-72a0-4cd3-9d5a-47ccdc459922",

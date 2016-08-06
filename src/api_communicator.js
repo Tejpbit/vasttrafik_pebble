@@ -32,14 +32,14 @@ api_communicator.getNearbyStops = function(coords, callback) {
     
     ajaxRequest("location.nearbystops", query, 
         function(data) {
-            var locations = data.LocationList.StopLocation;
+            var locations = data.LocationList.StopLocation || [];
             var filteredLocations = [];
 
             while (locations.length > 0) {
                 var element = locations.shift();
                 filteredLocations.push(element);
                 locations = locations
-                .filter(function (el) {
+                .filter(function(el) {
                     return el.name !== element.name;
                 });
             }

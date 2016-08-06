@@ -1,9 +1,5 @@
 var UI = require('ui');
 var f = require('api_communicator');
-var favourites = require('favourites');
-
-var FAVOURITES_SECTION = 0;
-var NEARBY_SECTION = 1;
 
 var subMenu;
 var nearbyStops;
@@ -13,55 +9,29 @@ var lon;
 
 var menu = new UI.Menu({
     sections: [{
-    title: 'Bästtrafik',
-    items: [{
-      title: 'Favourites',
-      subtitle: 'Add by long press select',
+       title: 'Nearby Stations'
     }]
-  },{
-    title: 'Nearby Stations'
-  }]
 });
 
 
 menu.on('click', 'back', function() {
-   favourites.saveToStorage();
    menu.hide(); 
 });
 
-
-function locationSuccess(pos) {
-  lat = pos.coords.latitude;
-  lon = pos.coords.longitude;
-    
-  f.getNearbyStops([lat, lon], setupMainMenuItems);
-}
-
 function setupMainMenuItems(stops) {
-    favourites.prioritizeIfPresent(stops);
+   console.log('walabala');
+   console.log(stops);
     printStopsToMenu(stops);
     nearbyStops = stops;
     
-    menu.on('select', favouritesOrSubMenu);
-    menu.on('longSelect', toggleFavourite);
-}
-
-function favouritesOrSubMenu(e){
-    console.log("Itemindex: " + e.itemIndex)
-    console.log("title:     " + e.title)
-    if (e.itemIndex === 0) {
-        console.log("show favourites");
-    } else {
-        console.log("show submenu");
-        setupAndShowSubMenu(e);
-    }
+   menu.on('select', setupAndShowSubMenu);
 }
 
 function printStopsToMenu(stops) {
     stops.map(function(stop) {
         return {title: stop.name};
     }).forEach(function(item, index) {
-        menu.item(1, index, item);
+        menu.item(0, index, item);
     });   
 }
 
@@ -79,25 +49,27 @@ function setupAndShowSubMenu(e) {
 }
 
 function departureBoardCallback(departures) {
-    departures.forEach(function(item, index) {
-        subMenu.item(0, index, {
+   if(!departures) {
+      subMenu.item(0, 0, {
+         title: 'No departures'
+        });
+   } else {
+      departures.forEach(function(item, index) {
+         subMenu.item(0, index, {
             title: item.name,
             subtitle: (item.rtTime || item.time) + " " + item.direction
-        });
-    });
+         });
+      });
+   }
 }
 
-function toggleFavourite(e) {
-    
-    var stopID = nearbyStops[e.itemIndex].id;
-    var stopIDIndex = favourites.indexOf(stopID);
-    if (stopIDIndex !== -1) {
-        favourites.splice(stopIDIndex, 1);
-    } else {
-        favourites.push(stopID);
-    }
+function locationSuccess(pos) {
+  lat = pos.coords.latitude;
+  lon = pos.coords.longitude;
+  console.log('Location success');
+   console.log(pos);
+  f.getNearbyStops([lat, lon], setupMainMenuItems);
 }
-
 
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
