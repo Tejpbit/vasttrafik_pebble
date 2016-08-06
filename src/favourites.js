@@ -1,36 +1,39 @@
-var utils = require('utils');
-
 var favourites = {};
 
 var FAVOURITES_KEY = "favourites";
-var favourite_stops = localStorage.getItem(FAVOURITES_KEY) || [];
+var favourite_stops = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
 
 
 favourites.saveToStorage = function() {
-    localStorage.setItem(FAVOURITES_KEY, favourite_stops);
+   localStorage.setItem(FAVOURITES_KEY, JSON.stringify(favourite_stops));
 };
 
-favourites.add = function(stop) {
-   if (! this.contains(favourite_stops, stop))
-       favourite_stops.push(stop.id);
+favourites.toggle = function(item) {
+   var i = favourite_stops.indexOf(item);
+   if (i > -1) {
+      console.log('Remove item');
+      this.remove(item);
+   } else {
+      console.log('Add item');
+      this.add(item);
+   }
 };
 
-favourites.remove = function(stop) {
-    var i = favourite_stops.indexOf(stop.id);
-    if (i > -1)
-        favourite_stops.splice(i, 1);
+favourites.add = function(item) {
+   var i = favourite_stops.indexOf(item);
+   if (i === -1) {
+      favourite_stops.push(item);
+      this.saveToStorage();
+   }
 };
 
-favourites.contains = function(stop) {
-    return utils.contains(favourite_stops, stop.id);
-};
-
-favourites.prioritizeIfPresent = function(stops) {
-    stops.sort(function(a, b) {
-        return favourites.contains(b) ? 1 : -1;
-    });
-    
-    return stops;
+favourites.remove = function(item) {
+    var i = favourite_stops.indexOf(item);
+    if (i > -1) {
+       favourite_stops.splice(i, 1);
+       this.saveToStorage();
+    }
+        
 };
 
 this.exports = favourites;

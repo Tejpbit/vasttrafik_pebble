@@ -1,5 +1,6 @@
 var UI = require('ui');
-var f = require('api_communicator');
+var api = require('api_communicator');
+var favourites = require('favourites');
 
 var subMenu;
 var nearbyStops;
@@ -19,12 +20,17 @@ menu.on('click', 'back', function() {
 });
 
 function setupMainMenuItems(stops) {
-   console.log('walabala');
-   console.log(stops);
     printStopsToMenu(stops);
     nearbyStops = stops;
     
    menu.on('select', setupAndShowSubMenu);
+   menu.on('longSelect', toggleFavourite);
+}
+
+function toggleFavourite(e) {
+   console.log(e.itemIndex);
+   console.log(nearbyStops[e.itemIndex].id);
+   favourites.toggle(nearbyStops[e.itemIndex].id);
 }
 
 function printStopsToMenu(stops) {
@@ -44,7 +50,7 @@ function setupAndShowSubMenu(e) {
         subMenu.hide();
     });
 
-    f.getDepartureboardFrom(selectedStop, departureBoardCallback);
+    api.getDepartureboardFrom(selectedStop, departureBoardCallback);
     subMenu.show();
 }
 
@@ -68,7 +74,7 @@ function locationSuccess(pos) {
   lon = pos.coords.longitude;
   console.log('Location success');
    console.log(pos);
-  f.getNearbyStops([lat, lon], setupMainMenuItems);
+  api.getNearbyStops([lat, lon], setupMainMenuItems);
 }
 
 function locationError(err) {
