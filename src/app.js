@@ -20,8 +20,19 @@ menu.on('click', 'back', function() {
 });
 
 function setupMainMenuItems(stops) {
-    printStopsToMenu(stops);
-    nearbyStops = stops;
+   var contains = function(item, arr) {
+      return arr.indexOf(item) > -1;
+   };
+   
+   var allFavs = favourites.getAll();
+   
+   console.log('Allfavs in app' + allFavs);
+   var foundFavourites = stops.filter(function(s) {return contains(s.id, allFavs);});
+   var nonFavourites = stops.filter(function(s) {return !contains(s.id, allFavs);});
+   var prioritisedStops = foundFavourites.concat(nonFavourites); 
+   console.log(prioritisedStops);
+   printStopsToMenu(prioritisedStops);
+   nearbyStops = prioritisedStops;
     
    menu.on('select', setupAndShowSubMenu);
    menu.on('longSelect', toggleFavourite);

@@ -2,7 +2,7 @@ var favourites = {};
 
 var FAVOURITES_KEY = "favourites";
 var favourite_stops = JSON.parse(localStorage.getItem(FAVOURITES_KEY) || '[]');
-
+console.log('Allfavs in favourietes' + favourite_stops);
 
 favourites.saveToStorage = function() {
    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(favourite_stops));
@@ -34,6 +34,10 @@ favourites.remove = function(item) {
        this.saveToStorage();
     }
         
+};
+
+favourites.getAll = function() {
+    return favourite_stops;
 };
 
 this.exports = favourites;
